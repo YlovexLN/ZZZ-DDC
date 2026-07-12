@@ -5,7 +5,11 @@
     "enabled": true
   },
   "assets": {
-    "directory": "dist"
+    "directory": "dist",
+    "binding": "ASSETS"
+  },
+  "build": {
+    "command": "pnpm run build"
   },
   "compatibility_flags": [
     "nodejs_compat"
