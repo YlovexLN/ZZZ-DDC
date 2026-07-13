@@ -57,6 +57,18 @@ function renderCharacterGrid(t, fi = 0) {
     });
 }
 
+// ─── Custom Stepper ────────────────────────────────────────────
+window.stepperChange = function(btn, delta) {
+    const input = btn.parentElement.querySelector('input');
+    const min = parseInt(input.getAttribute('min') || '0');
+    const max = parseInt(input.getAttribute('max') || '99');
+    let val = parseInt(input.value) || 0;
+    val = Math.max(min, Math.min(max, val + delta));
+    input.value = val;
+    const handler = input.getAttribute('onchange');
+    if (handler) (new Function(handler)).call(input);
+};
+
 // ─── Simple Mode ─────────────────────────────────────────────────
 function getSimpleWeights() {
     const w = simpleSelectedChar ? [...simpleSelectedChar.weights] : new Array(10).fill(0);
@@ -82,7 +94,7 @@ function buildSimpleEnhance() {
         const w = parseNumber(weightInputs[i].value);
         if (isNaN(w) || w <= 0) continue;
         const div = document.createElement('div'); div.className = 'enhance-row';
-        div.innerHTML = `<label><input type="checkbox" class="simple-enhance-check" data-idx="${i}" onchange="calcSimpleAutoScore()"> ${ENTRY_NAMES[i]}</label> 权重:<span>${w}</span> 强化次数:<input type="number" class="simple-enhance-times" data-idx="${i}" min="0" max="5" value="0" style="width:60px;" onchange="calcSimpleAutoScore()">`;
+        div.innerHTML = `<label><input type="checkbox" class="simple-enhance-check" data-idx="${i}" onchange="calcSimpleAutoScore()"> ${ENTRY_NAMES[i]}</label><span class="weight-label">权重:</span><span class="weight-value">${w}</span><div class="stepper"><button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button><input type="number" class="stepper-input simple-enhance-times" data-idx="${i}" min="0" max="5" value="0" onchange="calcSimpleAutoScore()"><button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button></div>`;
         area.appendChild(div);
     }
     calcSimpleAutoScore();
@@ -194,7 +206,7 @@ function buildPosEnhance(pos) {
         const w = parseNumber(weightInputs[i].value);
         if (isNaN(w) || w <= 0) continue;
         const div = document.createElement('div'); div.className = 'enhance-row';
-        div.innerHTML = `<label><input type="checkbox" class="enhance-check-${pos}" data-idx="${i}" onchange="calcPosScore(${pos})"> ${ENTRY_NAMES[i]}</label> 权重:<span>${w}</span> 强化次数:<input type="number" class="enhance-times-${pos}" data-idx="${i}" min="0" max="5" value="0" style="width:60px;" onchange="calcPosScore(${pos})">`;
+        div.innerHTML = `<label><input type="checkbox" class="enhance-check-${pos}" data-idx="${i}" onchange="calcPosScore(${pos})"> ${ENTRY_NAMES[i]}</label><span class="weight-label">权重:</span><span class="weight-value">${w}</span><div class="stepper"><button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button><input type="number" class="stepper-input enhance-times-${pos}" data-idx="${i}" min="0" max="5" value="0" onchange="calcPosScore(${pos})"><button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button></div>`;
         area.appendChild(div);
     }
     calcPosScore(pos);
@@ -300,7 +312,7 @@ window.generateAdvancedEntries = function generateAdvancedEntries() {
     const ct = document.getElementById('advanced-entries'); ct.innerHTML = '';
     for (let i = 0; i < cnt; i++) {
         const d = document.createElement('div'); d.className = 'entry-grid';
-        d.innerHTML = `<div class="entry-item"><label>词条${i+1}名称</label><input type="text" class="adv-name" value="词条${i+1}"></div><div class="entry-item"><label>库存</label><input type="number" class="adv-rest" min="1" value="1"></div><div class="entry-item"><label>权重</label><input type="text" class="adv-score" placeholder="整数/小数/分数"></div>`;
+        d.innerHTML = `<div class="entry-item"><label>词条${i+1}名称</label><div class="entry-name-container"><input type="text" class="adv-name" value="词条${i+1}"></div></div><div class="entry-item"><label>库存</label><div class="stepper"><button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button><input type="number" class="stepper-input adv-rest" min="1" value="1"><button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button></div></div><div class="entry-item"><label>权重</label><input type="text" class="game-weight adv-score" placeholder="整数/小数/分数"></div>`;
         ct.appendChild(d);
     }
 };
@@ -337,7 +349,7 @@ function initGameEntries() {
     const ct = document.getElementById('game-entries'); ct.innerHTML = '';
     ENTRY_NAMES.forEach(n => {
         const d = document.createElement('div'); d.className = 'entry-grid';
-        d.innerHTML = `<div class="entry-item"><label>词条名称</label><input type="text" value="${n}" disabled></div><div class="entry-item"><label>库存</label><input type="number" class="game-rest" min="0" value="1"></div><div class="entry-item"><label>权重</label><input type="text" class="game-weight" placeholder="整数/小数/分数"></div>`;
+        d.innerHTML = `<div class="entry-item"><label>词条名称</label><div class="entry-name-container"><input type="text" value="${n}" disabled></div></div><div class="entry-item"><label>库存</label><div class="stepper"><button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button><input type="number" class="stepper-input game-rest" min="0" value="1"><button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button></div></div><div class="entry-item"><label>权重</label><input type="text" class="game-weight" placeholder="整数/小数/分数"></div>`;
         ct.appendChild(d);
     });
     document.querySelectorAll('.game-weight').forEach(inp => inp.addEventListener('input', () => { getCurrentPositions().forEach(pos => buildPosEnhance(pos)); }));
