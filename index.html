@@ -3,136 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>绝区零驱动盘抽取强化提升概率计算器</title>
+    <title>绝区零驱动盘练度提升概率计算器</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-    <div class="container px-4 pt-4 sm:px-6 sm:pt-6 md:px-9 md:pt-9">
-        <h1 class="text-center text-2xl sm:text-3xl md:text-4xl mb-2">绝区零驱动盘抽取强化提升概率计算器<span class="gold-title">升级版</span></h1>
-        <p class="subtitle text-center text-gray-400 mb-4">全网首发 | 全角色阵营分类 | 支持简便版与综合版双模式计算</p>
+    <div class="container px-4 py-4 sm:px-6 sm:py-6 md:px-9 md:py-9">
+        <h1 class="text-center text-2xl sm:text-3xl md:text-4xl mb-2">绝区零驱动盘练度提升概率计算器 <span class="badge-title">V2.1</span></h1>
+        <p class="subtitle text-center text-gray-400 mb-4">全网首发 | 全角色阵营分类 | 支持游戏版与自定义版双模式计算</p>
         <div class="mode-tabs flex gap-3 mb-4 justify-center flex-wrap">
-            <button class="tab-btn active" data-mode="simple">简便版（1/2/3号盘）</button>
-            <button class="tab-btn" data-mode="advanced">综合版（1~6号盘，支持自定义场景）</button>
+            <button class="tab-btn active" data-mode="game">游戏版（1~6号盘）</button>
+            <button class="tab-btn" data-mode="custom">自定义版</button>
         </div>
-        <div id="simple-panel" class="panel active">
-            <div class="note bg-[#171717] border border-[#333] rounded-lg p-3 mb-4">
-                <p class="mb-0">注1：权重支持整数、小数(如0.5)、分数(如1/2)格式</p>
-                <p class="mb-0">注2：权重相同的不同词条需分别输入，无效词条留空即可(默认权重0)</p>
-                <p class="mb-0">注3：共10种词条，对应驱动盘10种副词条类型</p>
-            </div>
+        <!-- 游戏版面板 -->
+        <div id="game-panel" class="panel active">
             <div class="character-select bg-[#171717] border border-[#262626] rounded-xl p-4 mb-4">
                 <label class="block text-sm font-medium text-gray-300 mb-2">选择角色自动填充权重（可手动修改下方数值）</label>
-                <div class="faction-tabs flex gap-2 mb-3 flex-wrap" id="simple-faction-tabs"></div>
-                <div class="character-grid" id="simple-character-grid"></div>
-                <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="simple-alice-c6-option" style="display:none;">
-                    <input type="checkbox" id="simple-alice-c6" onchange="updateSimpleWeights()"> <label for="simple-alice-c6">爱丽丝6命（额外增加爆伤权重0.3）</label>
+                <div class="faction-tabs flex gap-2 mb-3 flex-wrap" id="game-faction-tabs"></div>
+                <div class="character-grid" id="game-character-grid"></div>
+                <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="game-alice-c6-option" style="display:none;">
+                    <input type="checkbox" id="game-alice-c6" onchange="updateGameWeights()"> <label for="game-alice-c6">爱丽丝6命（额外增加爆伤权重0.3）</label>
                 </div>
-                <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="simple-vivian-c4-option" style="display:none;">
-                    <input type="checkbox" id="simple-vivian-c4" onchange="updateSimpleWeights()"> <label for="simple-vivian-c4">薇薇安4命（暴击伤害权重改为0.6）</label>
+                <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="game-vivian-c4-option" style="display:none;">
+                    <input type="checkbox" id="game-vivian-c4" onchange="updateGameWeights()"> <label for="game-vivian-c4">薇薇安4命（暴击伤害权重改为0.6）</label>
                 </div>
             </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-300 mb-1">驱动盘号位（可多选）</label>
+                <div class="position-select flex gap-3 mb-3 flex-wrap" id="game-position-checkboxes">
+                    <label class="position-option flex items-center"><input type="checkbox" value="1" onchange="onPositionChange()"> 1号位</label>
+                    <label class="position-option flex items-center"><input type="checkbox" value="2" onchange="onPositionChange()"> 2号位</label>
+                    <label class="position-option flex items-center"><input type="checkbox" value="3" onchange="onPositionChange()"> 3号位</label>
+                    <label class="position-option flex items-center"><input type="checkbox" value="4" onchange="onPositionChange()"> 4号位</label>
+                    <label class="position-option flex items-center"><input type="checkbox" value="5" onchange="onPositionChange()"> 5号位</label>
+                    <label class="position-option flex items-center"><input type="checkbox" value="6" onchange="onPositionChange()"> 6号位</label>
+                </div>
+            </div>
+            <div id="position-configs"></div>
             <div class="entries-list bg-[#171717] border border-[#262626] rounded-lg p-3 mb-4">
-                <div id="simple-entries"></div>
+                <div id="game-entries"></div>
             </div>
-            <div class="mb-3">
-                <label class="block text-sm font-medium text-gray-300 mb-1">当前驱动盘已有词条强化次数（勾选4个词条并填写强化次数，自动计算分数）</label>
-                <div id="simple-enhance-area"></div>
-                <div class="mt-2"><strong>自动计算当前驱动盘分数：</strong><span id="simple-auto-score">0</span></div>
-            </div>
-            <div class="mb-3">
-                <label class="block text-sm font-medium text-gray-300 mb-1" for="simple-goal">当前驱动盘分数（有效词条数量 × 对应权重之和）</label>
-                <input type="text" class="custom-input" id="simple-goal" placeholder="例如：12.5 或 25/2">
-            </div>
-            <button class="btn-gold" onclick="calculateSimple()">开始计算</button>
+            <button class="btn" onclick="calculateGame()">开始计算</button>
         </div>
-        <div id="advanced-panel" class="panel">
+        <!-- 自定义版面板 -->
+        <div id="custom-panel" class="panel">
             <div class="note bg-[#171717] border border-[#333] rounded-lg p-3 mb-4">
                 <p class="mb-0">注：可通过自定义词条、库存、权重、缩放系数，适配更多游戏或生活概率计算场景</p>
             </div>
-            <div class="sub-mode-tabs flex gap-2 mb-4">
-                <button class="sub-mode-btn active" data-submode="game">游戏版（1~6号盘）</button>
-                <button class="sub-mode-btn" data-submode="custom">自定义版</button>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-300 mb-1">词条总种类数量（包括有效与无效词条）</label>
+                <div class="flex items-start entry-count-row">
+                    <div class="stepper" id="entry-count-stepper">
+                        <input type="number" class="stepper-input" id="entry-count" min="1" value="10" onchange="generateAdvancedEntries()">
+                        <button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button>
+                        <button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button>
+                    </div>
+                    <button class="btn-secondary px-26 py-2 rounded-lg cursor-pointer" onclick="generateAdvancedEntries()" style="font-weight:600;">生成词条输入</button>
+                </div>
             </div>
-            <div id="adv-custom-panel" style="display:none;">
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-300 mb-1">词条总种类数量（包括有效与无效词条）</label>
-                    <div class="flex items-start entry-count-row">
-                            <div class="stepper" id="entry-count-stepper">
-                            <input type="number" class="stepper-input" id="entry-count" min="1" value="10" onchange="generateAdvancedEntries()" style="height:42px;">
-                            <button type="button" class="stepper-btn" onclick="stepperChange(this,-1)">-</button>
-                            <button type="button" class="stepper-btn" onclick="stepperChange(this,1)">+</button>
-                        </div>
-                        <button class="px-26 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 cursor-pointer" onclick="generateAdvancedEntries()">生成词条输入</button>
-                    </div>
-                </div>
-                <div class="entries-list bg-[#171717] border border-[#262626] rounded-lg p-3 mb-4">
-                    <div id="advanced-entries"></div>
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="advanced-goal">当前驱动盘分数（有效词条数量 × 对应权重之和）</label>
-                    <input type="text" class="custom-input" id="advanced-goal" placeholder="例如：12.5 或 25/2">
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="advanced-scale">缩放系数</label>
-                    <input type="text" class="custom-input" id="advanced-scale" placeholder="例：1号位随机抽取输入 1/6；5号位输入 1/60">
-                    <small class="text-gray-400">示例1：随机抽1次得目标位置驱动盘概率1/6，输入1/6<br>示例2：4/6号位主词条仅1种可用，输入1/36；5号位主词条仅1种可用，输入1/60</small>
-                </div>
-                <button class="btn-gold" onclick="calculateAdvanced()">开始计算</button>
+            <div class="entries-list bg-[#171717] border border-[#262626] rounded-lg p-3 mb-4">
+                <div id="advanced-entries"></div>
             </div>
-            <div id="adv-game-panel">
-                <div class="character-select bg-[#171717] border border-[#262626] rounded-xl p-4 mb-4">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">选择角色自动填充权重（可手动修改下方数值）</label>
-                    <div class="faction-tabs flex gap-2 mb-3 flex-wrap" id="game-faction-tabs"></div>
-                    <div class="character-grid" id="game-character-grid"></div>
-                    <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="game-alice-c6-option" style="display:none;">
-                        <input type="checkbox" id="game-alice-c6" onchange="updateGameWeights()"> <label for="game-alice-c6">爱丽丝6命（额外增加爆伤权重0.3）</label>
-                    </div>
-                    <div class="special-option flex items-center gap-2 mt-3 p-2 rounded" id="game-vivian-c4-option" style="display:none;">
-                        <input type="checkbox" id="game-vivian-c4" onchange="updateGameWeights()"> <label for="game-vivian-c4">薇薇安4命（暴击伤害权重改为0.6）</label>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-300 mb-1">驱动盘号位（可多选）</label>
-                    <div class="position-select flex gap-3 mb-3 flex-wrap" id="game-position-checkboxes">
-                        <label class="position-option flex items-center"><input type="checkbox" value="1" onchange="onPositionChange()"> 1号位</label>
-                        <label class="position-option flex items-center"><input type="checkbox" value="2" onchange="onPositionChange()"> 2号位</label>
-                        <label class="position-option flex items-center"><input type="checkbox" value="3" onchange="onPositionChange()"> 3号位</label>
-                        <label class="position-option flex items-center"><input type="checkbox" value="4" onchange="onPositionChange()"> 4号位</label>
-                        <label class="position-option flex items-center"><input type="checkbox" value="5" onchange="onPositionChange()"> 5号位</label>
-                        <label class="position-option flex items-center"><input type="checkbox" value="6" onchange="onPositionChange()"> 6号位</label>
-                    </div>
-                </div>
-                <div id="position-configs"></div>
-                <div class="entries-list bg-[#171717] border border-[#262626] rounded-lg p-3 mb-4">
-                    <div id="game-entries"></div>
-                </div>
-                <button class="btn-gold" onclick="calculateGame()">开始计算</button>
+            <div class="special-option flex items-center p-3 rounded mb-4">
+                <label style="position:relative;display:flex;align-items:center;cursor:pointer;padding-left:26px;user-select:none;"><input type="checkbox" id="custom-direct-toggle" onchange="toggleCustomDirect()" style="position:absolute;opacity:0;width:0;height:0;"> 定向副词条（可多选，无数量限制）</label>
             </div>
+            <div id="custom-direct-area" style="display:none; margin-bottom:15px; padding:10px; background:#0a0a0a; border:1px solid #333; border-radius:8px;">
+                <label class="block text-sm font-medium text-gray-300 mb-2">选择定向词条</label>
+                <div id="custom-direct-options" class="main-entry-grid"></div>
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-300 mb-1" for="advanced-goal">当前驱动盘分数（有效词条数量 × 对应权重之和）</label>
+                <input type="text" class="custom-input" id="advanced-goal" placeholder="例如：12.5 或 25/2">
+            </div>
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-300 mb-1" for="advanced-scale">缩放系数</label>
+                <input type="text" class="custom-input" id="advanced-scale" placeholder="例：1号位随机抽取输入 1/6；5号位输入 1/60">
+                <small class="text-gray-400">示例1：随机抽1次得目标位置驱动盘概率1/6，输入1/6<br>示例2：4/6号位主词条仅1种可用，输入1/36；5号位主词条仅1种可用，输入1/60</small>
+            </div>
+            <button class="btn" onclick="calculateAdvanced()">开始计算</button>
         </div>
         <div class="result-area bg-[#171717] border border-[#2a2a2a] rounded-xl p-5 mt-4" id="result-area">
-            <h3 class="text-lg font-medium text-gray-100 mb-3">计算结果（小数点后15位有效数字）</h3>
+            <h3 class="text-lg font-medium mb-3" style="color:#FF4500;">计算结果（小数点后15位有效数字）</h3>
             <div id="per-position-results"></div>
-            <div class="result-item mb-2" id="res-a">A盘(5次强化)平均提升率：--</div>
-            <div class="result-item mb-2" id="res-b">B盘(4次强化)平均提升率：--</div>
-            <div class="result-item mb-2" id="res-directed">定向抽取综合提升率：--</div>
-            <div class="result-item mb-2" id="res-random">随机抽取综合提升率：--</div>
+            <div class="result-item mb-2" id="res-a">初始四词条驱动盘强化后练度提升概率：--</div>
+            <div class="result-item mb-2" id="res-b">初始三词条驱动盘强化后练度提升概率：--</div>
+            <div class="result-item mb-2" id="res-random">随机抽取综合练度提升概率：--</div>
         </div>
         <footer class="mt-8 sm:mt-10 border-t border-[#2a2a2a] py-4 sm:py-6 px-3 sm:px-4 text-center text-gray-400 text-sm">
             <p class="mb-3 flex items-center justify-center gap-1.5 sm:gap-2">
-                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#d4af37]/70"></span>
+                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#FF4500]/70"></span>
                 &copy; 2026 qfmyqqx
-                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#d4af37]/70"></span>
-                基于<a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#d4af37] transition-colors duration-300">CC BY-NC 4.0</a>
+                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#FF4500]/70"></span>
+                基于<a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#FF4500] transition-colors duration-300">CC BY-NC 4.0</a>
                 协议开源
-                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#d4af37]/70"></span>
+                <span class="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#FF4500]/70"></span>
             </p>
             <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
-                <a href="https://github.com/qfmyqqx/ZZZ-DDC.git" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[#2a2a2a] bg-[#1a1a1a]/70 text-gray-400 hover:text-[#d4af37] hover:border-[#d4af37]/60 hover:bg-[#d4af37]/5 transition-all duration-300">
+                <a href="https://github.com/qfmyqqx/ZZZ-DDC.git" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[#2a2a2a] bg-[#1a1a1a]/70 text-gray-400 hover:text-[#FF4500] hover:border-[#FF4500]/60 hover:bg-[#FF4500]/5 transition-all duration-300">
                     <i class="fab fa-github text-base sm:text-lg group-hover:scale-110 transition-transform duration-300"></i>
                     <span class="font-medium text-xs sm:text-sm">GitHub</span>
                 </a>
-                <a href="https://space.bilibili.com/3546385901161355" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[#2a2a2a] bg-[#1a1a1a]/70 text-gray-400 hover:text-[#d4af37] hover:border-[#d4af37]/60 hover:bg-[#d4af37]/5 transition-all duration-300">
+                <a href="https://space.bilibili.com/3546385901161355" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[#2a2a2a] bg-[#1a1a1a]/70 text-gray-400 hover:text-[#FF4500] hover:border-[#FF4500]/60 hover:bg-[#FF4500]/5 transition-all duration-300">
                     <i class="fab fa-bilibili text-base sm:text-lg group-hover:scale-110 transition-transform duration-300"></i>
                     <span class="font-medium text-xs sm:text-sm">作者B站</span>
                 </a>

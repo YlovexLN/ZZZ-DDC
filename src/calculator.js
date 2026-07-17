@@ -7,14 +7,21 @@ export function parseNumber(str) {
     return parseFloat(str);
 }
 
-function firstGroup(savePool, shortGroup, basicSc, presentWeight, allGroups) {
-    if (shortGroup.length === 4) { allGroups.push({ firstFour: [...shortGroup], basicsc: basicSc, weight: presentWeight }); return; }
+function firstGroup(savePool, shortGroup, basicSc, presentWeight, allGroups, requiredTypes = []) {
+    if (shortGroup.length === 4) {
+        if (requiredTypes.length > 0) {
+            const typesInGroup = new Set(shortGroup.map(item => item.typeIndex));
+            if (!requiredTypes.every(t => typesInGroup.has(t))) return;
+        }
+        allGroups.push({ firstFour: [...shortGroup], basicsc: basicSc, weight: presentWeight });
+        return;
+    }
     for (let i = 0; i < savePool.length; i++) {
         if (savePool[i].rest <= 0) continue;
         const nP = savePool.map(item => ({ ...item }));
         nP[i].rest--;
         shortGroup.push({ ...savePool[i] });
-        firstGroup(nP, shortGroup, basicSc + savePool[i].score, presentWeight * savePool[i].rest, allGroups);
+        firstGroup(nP, shortGroup, basicSc + savePool[i].score, presentWeight * savePool[i].rest, allGroups, requiredTypes);
         shortGroup.pop();
     }
 }
@@ -26,9 +33,9 @@ function dfsUp(leaveTimes, nowAdd, need, nowGroup, counter) {
 
 function passChance(times, need, nowGroup) { const c = { total: 0, pass: 0 }; dfsUp(times, 0, need, nowGroup, c); return c.total === 0 ? 0 : c.pass / c.total; }
 
-export function calculateCore(entryList, goal, scaleFactor) {
+export function calculateCore(entryList, goal, scaleFactor, directedTypes = []) {
     const allGroups = [];
-    firstGroup(entryList, [], 0, 1, allGroups);
+    firstGroup(entryList, [], 0, 1, allGroups, directedTypes);
     let gA = 0, gB = 0, tW = 0;
     for (const gr of allGroups) {
         let sA, sB;
